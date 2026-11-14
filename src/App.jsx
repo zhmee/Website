@@ -4,7 +4,7 @@ import "./App.css";
 const NAME = "Michelle ";
 const EMAIL = "mz625@cornell.edu";
 const RESUME = "/resume.pdf";
-const DIVIDER = "/Divider.svg";
+const DIVIDER = `${import.meta.env.BASE_URL}Divider.svg`;
 
 // Divider
 function SectionDivider() {
