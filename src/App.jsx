@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 
+const BASE = import.meta.env.BASE_URL;
+const RESUME = `${BASE}Michelle_Resume.pdf`;
+const DIVIDER = `${BASE}Divider.svg`;
 const NAME = "Michelle ";
 const EMAIL = "mz625@cornell.edu";
-const RESUME = "/resume.pdf";
-const DIVIDER = `${import.meta.env.BASE_URL}Divider.svg`;
 
 // Divider
 function SectionDivider() {
@@ -60,7 +61,6 @@ function ScrollProgress() {
   );
 }
 
-
 // Experience data
 const experiences = [
   {
@@ -76,8 +76,11 @@ const experiences = [
     company: "NSF REU · UMBC",
     dates: "Summer 2025",
     kind: "Research",
-    description:
-      "Explored machine learning methods for classifying prompt gamma signals in proton beam radiotherapy.",
+    description: [
+      "Developed PyTorch-based machine learning models to improve real-time imaging for proton beam radiotherapy",
+      "Preprocessed and analyzed data and tuned models, increasing accuracy from 56% to 74%",
+      "Co-authored a research paper on neural network denoising for proton beam radiotherapy",
+    ],
   },
   {
     role: "Course Consultant",
@@ -92,25 +95,32 @@ const experiences = [
 // Project data
 const projects = [
   {
-    title: "CamlNom",
-    category: "Software",
-    image: "/images/camlnom.png",
+    title: "FloraSense",
+    category: "AI / Full-Stack",
+    videoId: "bneQWj1GAnw",
+    videoCover: `${BASE}images/FloraSense.png`,
     summary:
-      "A Cornell dining exploration tool for finding meals and sharing recommendations.",
-    details:
-      "Built with OCaml, featuring menu updates through web scraping, dietary filters, community reviews, and customizable plates.",
-    tags: ["OCaml", "Web Scraping", "Full-Stack"],
-    link: "",
+      "A full-stack, user-centered flower gifting platform that turns natural language queries into personalized flower recommendations and visualizations, using TF-IDF, SVD, RAG, GloVe, and LLMs.",
+    tags: ["Python", "React", "RAG", "NLP", "LLMs"],
+    link: "https://florasense.4300showcase.infosci.cornell.edu/",
   },
   {
-    title: "AutoBoat Website",
-    category: "Web",
-    image: "/images/autoboat.png",
+    title: "CamlNom",
+    category: "Software",
+    videoId: "jeUbrv5UHGo",
+    videoCover: `${BASE}images/camlNom.png`,
     summary:
-      "A website showcasing Cornell AutoBoat's team, technical work, and competitions.",
-    details:
-      "Designed and developed interactive pages to communicate the team's engineering work, history, and sponsorship opportunities.",
-    tags: ["Web Development", "UI/UX"],
+      "An OCaml dining exploration tool that helps students filter Cornell Dining options by cuisine and dietary restrictions. Features real-time menu updates via web scraping, community ratings and reviews, and customizable “plates” for sharing meal combinations.",
+    tags: ["OCaml", "Web Scraping", "Full-Stack"],
+    link: "https://github.com/zhmee/CamlNom",
+  },
+  {
+    title: "Cornell AutoBoat Website",
+    category: "Web",
+    image: `${BASE}images/CornellAutoBoat.png`,
+    summary:
+      "Led development of Cornell AutoBoat's new full-stack team website, built with React, Next.js, TypeScript, and CSS, with API integration.",
+    tags: ["React", "Next.js", "TypeScript", "API Integration"],
     link: "",
   },
 ];
@@ -150,6 +160,40 @@ function SectionHeading({ title, description }) {
     </div>
   );
 }
+//video covers
+function VideoCover({ videoId, cover, title }) {
+  const [playing, setPlaying] = useState(false);
+
+  if (playing) {
+    return (
+      <iframe
+        className="showcase-image"
+        src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0`}
+        title={title}
+        allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+        allowFullScreen
+      />
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      className="video-cover"
+      onClick={() => setPlaying(true)}
+      aria-label={`Play ${title} video`}
+    >
+      <Photo
+        src={cover}
+        alt={`${title} video cover`}
+        className="showcase-image"
+      />
+      <span className="video-play" aria-hidden="true">
+        ▶
+      </span>
+    </button>
+  );
+}
 
 //  Project showcases
 function ProjectShowcase({ project, index, total }) {
@@ -163,34 +207,42 @@ function ProjectShowcase({ project, index, total }) {
       }`}
     >
       <div className="project-showcase-inner">
-        
-          <div className="project-meta">
-            <span>
-              {String(index + 1).padStart(2, "0")} /{" "}
-              {String(total).padStart(2, "0")}
-            </span>
-            <span>{project.category}</span>
-          </div>
+        <div className="project-meta">
+          <span>
+            {String(index + 1).padStart(2, "0")} /{" "}
+            {String(total).padStart(2, "0")}
+          </span>
+          <span>{project.category}</span>
+        </div>
 
-          <h3>{project.title}</h3>
+        <h3>{project.title}</h3>
 
-          <p className="project-summary">{project.summary}</p>
+        <p className="project-summary">{project.summary}</p>
 
-          <div className="project-image-frame">
+        <div className="project-image-frame">
+          {project.videoId ? (
+            <VideoCover
+              videoId={project.videoId}
+              cover={project.videoCover || project.image}
+              title={project.title}
+            />
+          ) : (
             <Photo
               src={project.image}
               alt={`${project.title} screenshot`}
               className="showcase-image"
             />
+          )}
+        </div>
+
+        <div className="showcase-bottom">
+          <div className="tags">
+            {project.tags.map((tag) => (
+              <span key={tag}>{tag}</span>
+            ))}
           </div>
 
-          <div className="showcase-bottom">
-            <div className="tags">
-              {project.tags.map((tag) => (
-                <span key={tag}>{tag}</span>
-              ))}
-            </div>
-
+          {project.details && (
             <button
               className="showcase-details-button"
               type="button"
@@ -200,19 +252,20 @@ function ProjectShowcase({ project, index, total }) {
             >
               {expanded ? "Hide project notes −" : "Explore project notes +"}
             </button>
-          </div>
-
-          {expanded && (
-            <div className="showcase-notes" id={panelId}>
-              <p>{project.details}</p>
-
-              {project.link && (
-                <a href={project.link} target="_blank" rel="noreferrer">
-                  View project ↗
-                </a>
-              )}
-            </div>
           )}
+        </div>
+
+        {expanded && project.details && (
+          <div className="showcase-notes" id={panelId}>
+            <p>{project.details}</p>
+
+            {project.link && (
+              <a href={project.link} target="_blank" rel="noreferrer">
+                View project ↗
+              </a>
+            )}
+          </div>
+        )}
       </div>
     </article>
   );
@@ -234,7 +287,12 @@ export default function App() {
 
           <nav aria-label="Main navigation">
             <a href="#about">About</a>
-            <a href="#work">Work</a>
+            <a href="#work" onClick={() => setTab("work")}>
+              Work
+            </a>
+            <a href="#work" onClick={() => setTab("projects")}>
+              Projects
+            </a>
             <a href="#contact">Contact</a>
           </nav>
 
@@ -264,7 +322,11 @@ export default function App() {
             </p>
 
             <div className="hero-actions">
-              <a className="button button-primary" href="#work">
+              <a
+                className="button button-primary"
+                href="#work"
+                onClick={() => setTab("projects")}
+              >
                 Explore my work ↗
               </a>
 
@@ -284,7 +346,7 @@ export default function App() {
 
             <div className="hero-photo-frame">
               <Photo
-                src="/images/cornell.jpg"
+                src={`${BASE}images/Cornell.png`}
                 alt="Cornell campus"
                 className="hero-photo"
               />
@@ -309,30 +371,32 @@ export default function App() {
           className="content-section page-width about-section"
           id="about"
         >
+          
           <div className="about-layout">
             <div className="about-copy">
               <p>
-                I'm a Computer Science and Operations Research & Engineering
-                double major at Cornell University. I enjoy solving technically
-                challenging problems and building software that makes a
-                real-world impact. My interests span software engineering,
-                full-stack development, machine learning, and AI.
+                I'm looking for software engineering roles where I can build
+                products people actually use. I like building
+                full software applications, from data and models to the interface,
+                and I enjoy working on problems that are technically challenging. 
               </p>
 
               <p>
-                Outside of coursework, I enjoy exploring new ideas, working on
-                personal projects, and watching Formula 1 races on the weekends.
+                I learn best on collaborative teams that give real ownership and
+                value clear communication. Outside of coursework, I enjoy
+                working on personal projects and watching Formula 1 races on the
+                weekends!
               </p>
 
               <div className="about-facts">
                 <div>
                   <span>STUDYING</span>
-                  <strong>Computer Science + ORIE</strong>
+                  <strong>Computer Science + ORIE @ Cornell University</strong>
                 </div>
 
                 <div>
-                  <span>AT</span>
-                  <strong>Cornell University</strong>
+                  <span>LOOKING FOR</span>
+                  <strong>Software Engineering Roles</strong>
                 </div>
 
                 <div>
@@ -394,9 +458,11 @@ export default function App() {
                       <span className="experience-kind">{job.kind}</span>
                       <h3>{job.role}</h3>
                       <p className="experience-company">{job.company}</p>
-                      <p className="experience-description">
-                        {job.description}
-                      </p>
+                      <ul className="experience-description">
+                        {[].concat(job.description).map((line) => (
+                          <li key={line}>{line}</li>
+                        ))}
+                      </ul>
                     </div>
                   </article>
                 ))}
