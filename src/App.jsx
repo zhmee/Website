@@ -68,8 +68,10 @@ const experiences = [
     company: "Amazon",
     dates: "Jun – Aug 2026",
     kind: "Internship",
-    description:
-      "Built and deployed a Python forecasting model to predict operational volumes. Validated performance through backtesting and automated the forecasting pipeline.",
+    description: [
+      "Built and deployed a Python forecasting model to predict operational volumes.",
+      " Validated performance through backtesting and automated the forecasting pipeline.",
+    ],
   },
   {
     role: "Research Assistant",
@@ -371,14 +373,13 @@ export default function App() {
           className="content-section page-width about-section"
           id="about"
         >
-          
           <div className="about-layout">
             <div className="about-copy">
               <p>
                 I'm looking for software engineering roles where I can build
-                products people actually use. I like building
-                full software applications, from data and models to the interface,
-                and I enjoy working on problems that are technically challenging. 
+                products people actually use. I like building full software
+                applications, from data and models to the interface, and I enjoy
+                working on problems that are technically challenging.
               </p>
 
               <p>
